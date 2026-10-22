@@ -1,0 +1,18 @@
+@startuml
+title sucia_mas_cercana(mundo, posicion)
+
+start
+:mejor_camino = None;
+:lista_sucias = celdas_sucias(mundo);
+
+while (¿quedan celdas sucias por evaluar?) is (sí)
+  :tomar siguiente **sucia**;
+  :camino = **bfs**(mundo, posicion, sucia);
+  if (¿camino no vacío Y\n (mejor_camino = None\n  O len(camino) < len(mejor_camino))?) then (sí)
+    :mejor_camino = camino;
+  endif
+endwhile (no)
+
+:return mejor_camino;
+stop
+@enduml

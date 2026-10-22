@@ -1,0 +1,25 @@
+@startuml
+title bfs(mundo, origen, meta)
+
+start
+:cola = deque([origen]);
+:visitados = {origen};
+:padre = {origen: None};
+
+while (¿cola no vacía?) is (sí)
+  :actual = cola.popleft();
+  if (¿actual == meta?) then (sí)
+    :return **reconstruir_camino**(padre, meta);
+    stop
+  endif
+  :para cada v en **vecinos**(mundo, actual):
+    if (¿v no está en visitados?) then (sí)
+      :visitados.add(v);
+      :padre[v] = actual;
+      :cola.append(v);
+    endif
+endwhile (no)
+
+:return [];  (no hay camino);
+stop
+@enduml

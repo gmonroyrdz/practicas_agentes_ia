@@ -1,0 +1,42 @@
+@startuml
+title Funciones auxiliares
+
+partition "vecinos(mundo, fila, col)" {
+  start
+  :resultado = [];
+  while (¿quedan MOVIMIENTOS por probar?) is (sí)
+    :nf = fila + df;  nc = col + dc;
+    if (¿0<=nf<FILAS Y 0<=nc<COLUMNAS\n Y mundo[nf][nc] != 2?) then (sí)
+      :resultado.append((nf, nc));
+    endif
+  endwhile (no)
+  :return resultado;
+  stop
+}
+
+partition "celdas_sucias(mundo)" {
+  start
+  :sucias = [];
+  while (¿quedan celdas por revisar?) is (sí)
+    if (¿mundo[f][c] == 1?) then (sí)
+      :sucias.append((f, c));
+    endif
+  endwhile (no)
+  :return sucias;
+  stop
+}
+
+partition "reconstruir_camino(padre, meta)" {
+  start
+  :camino = [];
+  :actual = meta;
+  while (¿actual != None?) is (sí)
+    :camino.append(actual);
+    :actual = padre[actual];
+  endwhile (no)
+  :camino.reverse();
+  :return camino;
+  stop
+}
+
+@enduml

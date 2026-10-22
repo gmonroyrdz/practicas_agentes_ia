@@ -1,0 +1,12 @@
+@startuml
+title Aspiradora — Flujo principal (main)
+
+start
+:Copiar MUNDO a **mundo**;
+:inicio = (0, 0);
+:Imprimir "Mapa inicial";
+:historial, pasos = **agente_aspiradora**(mundo, inicio);
+:Imprimir "Mapa final";
+:Imprimir "Celdas recorridas" y "Pasos totales";
+stop
+@enduml

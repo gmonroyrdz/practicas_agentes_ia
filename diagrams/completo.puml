@@ -1,0 +1,144 @@
+@startuml
+skinparam activity {
+  BackgroundColor #FEFECE
+  BorderColor #A80036
+  ArrowColor #A80036
+}
+skinparam partition {
+  BackgroundColor #F0F0F0
+  BorderColor #888888
+}
+skinparam note {
+  BackgroundColor #FFFFCC
+  BorderColor #CCCC00
+}
+
+title Aspiradora — Diagrama de flujo unificado
+
+' ============================================================
+partition "main" {
+  start
+  :Copiar MUNDO a **mundo**;
+  :inicio = (0, 0);
+  :Imprimir "Mapa inicial";
+  :**historial, pasos** = agente_aspiradora(mundo, inicio);
+  note right: ver partición **agente_aspiradora**
+  :Imprimir "Mapa final";
+  :Imprimir "Celdas recorridas" y "Pasos totales";
+  stop
+}
+
+' ============================================================
+partition "agente_aspiradora(mundo, inicio)" {
+  start
+  :posicion = inicio;
+  :pasos = 0;
+  :historial = [posicion];
+  while (¿celdas_sucias(mundo) > 0?) is (sí)
+    :camino = sucia_mas_cercana(mundo, posicion);
+    note right: ver partición **sucia_mas_cercana**
+    if (¿camino vacío?) then (sí)
+      :print "No hay camino a ninguna celda sucia";
+      break
+    endif
+    :para cada **celda** en camino[1:]\n  posicion = celda\n  pasos = pasos + 1\n  historial.append(posicion);
+    :mundo[posicion] = 0  (aspirar);
+    :print "Aspirado en posicion (paso pasos)";
+  endwhile (no)
+  :return historial, pasos;
+  stop
+}
+
+' ============================================================
+partition "sucia_mas_cercana(mundo, posicion)" {
+  start
+  :mejor_camino = None;
+  :lista_sucias = celdas_sucias(mundo);
+  note right: ver partición **celdas_sucias**
+  while (¿quedan celdas sucias por evaluar?) is (sí)
+    :tomar siguiente **sucia**;
+    :camino = bfs(mundo, posicion, sucia);
+    note right: ver partición **bfs**
+    if (¿camino no vacío Y\n (mejor_camino = None\n  O len(camino) < len(mejor_camino))?) then (sí)
+      :mejor_camino = camino;
+    endif
+  endwhile (no)
+  :return mejor_camino;
+  stop
+}
+
+' ============================================================
+partition "bfs(mundo, origen, meta)" {
+  start
+  :cola = deque([origen]);
+  :visitados = {origen};
+  :padre = {origen: None};
+  while (¿cola no vacía?) is (sí)
+    :actual = cola.popleft();
+    if (¿actual == meta?) then (sí)
+      :return reconstruir_camino(padre, meta);
+      note right: ver partición **reconstruir_camino**
+      stop
+    endif
+    :para cada v en vecinos(mundo, *actual);
+    note right: ver partición **vecinos**
+    if (¿v no está en visitados?) then (sí)
+      :visitados.add(v);
+      :padre[v] = actual;
+      :cola.append(v);
+    endif
+  endwhile (no)
+  :return [];  (no hay camino);
+  stop
+}
+
+' ============================================================
+partition "vecinos(mundo, fila, col)" {
+  start
+  :resultado = [];
+  while (¿quedan MOVIMIENTOS por probar?) is (sí)
+    :nf = fila + df;  nc = col + dc;
+    if (¿0<=nf<FILAS Y 0<=nc<COLUMNAS\n Y mundo[nf][nc] != 2?) then (sí)
+      :resultado.append((nf, nc));
+    endif
+  endwhile (no)
+  :return resultado;
+  stop
+}
+
+' ============================================================
+partition "celdas_sucias(mundo)" {
+  start
+  :sucias = [];
+  while (¿quedan celdas por revisar?) is (sí)
+    if (¿mundo[f][c] == 1?) then (sí)
+      :sucias.append((f, c));
+    endif
+  endwhile (no)
+  :return sucias;
+  stop
+}
+
+' ============================================================
+partition "reconstruir_camino(padre, meta)" {
+  start
+  :camino = [];
+  :actual = meta;
+  while (¿actual != None?) is (sí)
+    :camino.append(actual);
+    :actual = padre[actual];
+  endwhile (no)
+  :camino.reverse();
+  :return camino;
+  stop
+}
+
+legend right
+  **Jerarquía de llamadas**
+  main → agente_aspiradora
+  agente_aspiradora → celdas_sucias, sucia_mas_cercana
+  sucia_mas_cercana → celdas_sucias, bfs
+  bfs → vecinos, reconstruir_camino
+endlegend
+
+@enduml

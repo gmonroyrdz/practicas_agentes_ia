@@ -1,0 +1,22 @@
+@startuml
+title agente_aspiradora(mundo, inicio)
+
+start
+:posicion = inicio;
+:pasos = 0;
+:historial = [posicion];
+
+while (¿celdas_sucias(mundo) > 0?) is (sí)
+  :camino = **sucia_mas_cercana**(mundo, posicion);
+  if (¿camino vacío?) then (sí)
+    :print "No hay camino a ninguna celda sucia";
+    break
+  endif
+  :para cada **celda** en camino[1:]\n  posicion = celda\n  pasos = pasos + 1\n  historial.append(posicion);
+  :mundo[posicion] = 0  (aspirar);
+  :print "Aspirado en posicion (paso pasos)";
+endwhile (no)
+
+:return historial, pasos;
+stop
+@enduml
