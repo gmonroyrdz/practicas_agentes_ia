@@ -95,9 +95,17 @@ def agente_aspiradora(mundo, inicio):
 
     return historial, pasos
 
+import random
+def map_aleatorio(filas, columnas, prob_sucia=0.4, prob_obs=0.15):
+    return [[2 if random.random() < prob_obs else (1 if random.random() < prob_sucia else 0)
+    for _ in range(columnas)]
+    for _ in range(filas)]
+
 if __name__ == "__main__":
-    mundo = [fila[:] for fila in MUNDO]   # copia para no modificar el original
+    #mundo = [fila[:] for fila in MUNDO]   # copia para no modificar el original
     inicio = (0, 0)
+
+    mundo = map_aleatorio(10,10,0.2,0.15)
 
     print("Mapa inicial:")
     for fila in mundo:
